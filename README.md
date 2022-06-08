@@ -91,11 +91,9 @@ docker-compose up or docker-compose up -d
 ### Additional information
 After complete docker-compose task need wait ~2 minute for initialize filebeat and kibana dashboard for metrics.
 
-HAproxy\Nginx web output: http://127.0.0.1
-
-HAproxy metrics: http://127.0.0.1:70
-
-Kibana dashboard: http://127.0.0.1:5601 (Home -> Analytics -> Dashboard -> [Filebeat Nginx] Access and error logs ECS)
+- HAproxy\Nginx web output: http://127.0.0.1
+- HAproxy metrics: http://127.0.0.1:70
+- Kibana dashboard: http://127.0.0.1:5601 (Home -> Analytics -> Dashboard -> [Filebeat Nginx] Access and error logs ECS)
 
 
 ## 3. ANSIBLE - [ ansible ]
