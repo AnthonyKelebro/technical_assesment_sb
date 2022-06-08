@@ -37,7 +37,7 @@ cd <directory with python cli-tool>
 python3 frenamer.py -p videofile -s avi --path /home/user/Documents/Video --reverse_order
 ```
 
-### Example output
+#### Example output
 ```bash
 [2022-06-07 01:11:17 PM] [frenamer] (INFO) Gathering data: File <video_lalafel_532.avi> finded in directory
 [2022-06-07 01:11:17 PM] [frenamer] (INFO) Gathering data: File <sector_zero_000001.avi> finded in directory
@@ -48,7 +48,6 @@ python3 frenamer.py -p videofile -s avi --path /home/user/Documents/Video --reve
 [2022-06-07 01:11:17 PM] [frenamer] (INFO) Renaming: File <video_lalafel_532.avi> renamed to <videofile_2022-06-07_002.avi>
 [2022-06-07 01:11:17 PM] [frenamer] (INFO) Renaming: File <sector_zero_000001.avi> renamed to <videofile_2022-06-07_003.avi>
 ```
-###
 
 ## 2. DOCKER - [ docker ]
 ### Enviroment used for task
