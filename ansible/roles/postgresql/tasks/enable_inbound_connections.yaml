@@ -1,0 +1,11 @@
+---
+- name: "Enable inbound connection for 10.231.0.0/16"
+  postgresql_pg_hba:
+    dest: "/etc/postgresql/14/main/pg_hba.conf"
+    contype: host
+    databases: all
+    source: 10.231.0.0/16
+    method: md5
+    create: true
+  notify: Restart postgresql
+...

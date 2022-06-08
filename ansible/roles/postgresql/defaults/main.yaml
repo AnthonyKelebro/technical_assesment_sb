@@ -1,0 +1,5 @@
+---
+databases_for_dump:
+  - postgres
+  - testdb
+...

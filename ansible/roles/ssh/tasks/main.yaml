@@ -1,0 +1,39 @@
+---
+- name: Prepare ssh-keys for remote connection
+  delegate_to: localhost
+  block:
+  - name: Create directory for ssh content
+    file:
+      path: "{{ ansible_env.HOME }}/.ssh"
+      state: directory
+      mode: 0700
+
+  - name: Generate an OpenSSH keypair with the default values (4096 bits, rsa)
+    openssh_keypair:
+      path: "{{ ansible_env.HOME }}/.ssh/id_rsa"
+      size: 4096
+      state: present
+  when: ssh_gen_key
+
+- name: ensure app public key
+  authorized_key: 
+    user: "{{ ansible_ssh_user }}"
+    key: "{{ lookup('file', '{{ ansible_env.HOME }}/.ssh/id_rsa.pub') }}"
+    state: present
+
+- name: Disable PasswordAuthentication
+  lineinfile:
+    path: "/etc/ssh/sshd_config"
+    line: "PasswordAuthentication no"
+    state: present
+  notify:
+    - Restart sshd
+
+- name: Ensure PasswordAuthentication is not enabled
+  lineinfile:
+    path: "/etc/ssh/sshd_config"
+    line: "PasswordAuthentication yes"
+    state: absent
+  notify:
+    - Restart sshd
+...

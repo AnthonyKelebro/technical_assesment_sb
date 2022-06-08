@@ -1,0 +1,21 @@
+---
+- name: Enable postgresql
+  systemd:
+    name: postgresql
+    enabled: yes
+
+- name: Start postgresql
+  systemd:
+    name: postgresql
+    state: started
+
+- name: Stop postgresql
+  systemd:
+    name: postgresql
+    state: stopped
+
+- name: Restart postgresql
+  systemd:
+    name: postgresql
+    state: restarted
+...

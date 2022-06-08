@@ -1,0 +1,7 @@
+---
+- hosts: postgresql_server
+  roles:
+    - postgresql
+    - firewall
+    - ssh
+...

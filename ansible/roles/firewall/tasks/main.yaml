@@ -1,0 +1,16 @@
+---
+- name: Enable ufw
+  ufw:
+    state: enabled
+
+- name: Allow ssh connection
+  ufw:
+    rule: allow
+    name: OpenSSH
+
+- name: Allow inbound connection to postgresql port
+  ufw:
+    rule: allow
+    direction: in
+    to_port: "{{ postgresql_port | int }}"
+...

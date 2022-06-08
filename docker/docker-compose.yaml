@@ -1,0 +1,109 @@
+---
+version: "3.9"
+services:
+  nginx_green:
+    build:
+      context: ./
+      dockerfile: nginx.Dockerfile
+      args:
+        - "NGINX_VERSION=${NGINX_VERSION}"
+    ports:
+      - "8080:80"
+    volumes:
+      - ./files/nginx/index_green.html:/usr/share/nginx/html/index.html:ro
+      - logvolume_green:/var/log/nginx/
+
+  filebeat_green:
+    build:
+      context: ./
+      dockerfile: filebeat.Dockerfile
+      args:
+        - "FILEBEAT_VERSION=${ELK_VERSION}"
+        - "ELASTIC_USERNAME=${ELASTIC_USERNAME}"
+        - "ELASTIC_PASSWORD=${ELASTIC_PASSWORD}"
+    volumes:
+      - logvolume_green:/var/log/nginx/
+    links:
+      - elasticsearch
+      - kibana
+    depends_on:
+      - elasticsearch
+      - kibana
+
+  nginx_blue:
+    build:
+      context: ./
+      dockerfile: nginx.Dockerfile
+      args:
+        - "NGINX_VERSION=${NGINX_VERSION}"
+    ports:
+      - "8081:80"
+    volumes:
+      - ./files/nginx/index_blue.html:/usr/share/nginx/html/index.html:ro
+      - logvolume_blue:/var/log/nginx/
+  
+  filebeat_blue:
+    build:
+      context: ./
+      dockerfile: filebeat.Dockerfile
+      args:
+        - "FILEBEAT_VERSION=${ELK_VERSION}"
+        - "ELASTIC_USERNAME=${ELASTIC_USERNAME}"
+        - "ELASTIC_PASSWORD=${ELASTIC_PASSWORD}"
+    volumes:
+      - logvolume_blue:/var/log/nginx/
+    links:
+      - elasticsearch
+      - kibana
+    depends_on:
+      - elasticsearch
+      - kibana
+
+  haproxy:
+    image: haproxy:${HAPROXY_VERSION}-alpine
+    ports:
+      - "80:80"
+      - "70:70"
+    volumes:
+        - ./files/haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    links:
+      - nginx_green
+      - nginx_blue
+    depends_on:
+      - nginx_green
+      - nginx_blue
+
+  elasticsearch:
+    image: elasticsearch:${ELK_VERSION}
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      - "discovery.type=single-node"
+      - "xpack.ml.enabled=false"
+      - "cluster.name=elastic-test-cluster"
+      - "ELASTIC_USERNAME=${ELASTIC_USERNAME}"
+      - "ELASTIC_PASSWORD=${ELASTIC_PASSWORD}"
+      - "xpack.security.enabled=false"
+      - "xpack.security.transport.ssl.enabled=false"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+
+  kibana:
+    image: kibana:${ELK_VERSION}
+    ports:
+      - "5601:5601"
+    environment:
+      - "ELASTICSEARCH_USERNAME=${ELASTIC_USERNAME}"
+      - "ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD}"
+    links:
+      - elasticsearch
+    depends_on:
+      - elasticsearch
+  
+volumes:
+  logvolume_green:
+  logvolume_blue:
+...

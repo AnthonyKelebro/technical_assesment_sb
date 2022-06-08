@@ -1,0 +1,11 @@
+---
+- name: Schedule backups for postgresql
+  cron:
+    name: "PostgreSQL Backup"
+    cron_file: "ansible_postgresql_backup_{{ item }}"
+    user: postgres
+    special_time: daily
+    job: >-
+      pg_dump {{ item }} > /opt/{{ item }}_$(date +%Y_%m_%d).dump
+  with_items: "{{ databases_for_dump }}"
+...

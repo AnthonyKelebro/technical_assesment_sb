@@ -1,0 +1,46 @@
+---
+- name: Update apt repo and cache
+  apt:
+    update_cache: yes
+    force_apt_get: yes
+    cache_valid_time: 3600
+
+- name: Upgrade all packages
+  apt:
+    upgrade: dist
+    force_apt_get: yes
+
+- name: Checkup postgresql-14 repo
+  stat:
+    path: /etc/apt/sources.list.d/pgdg.list
+  register: pgdg_result 
+  when: >
+    ansible_distribution == 'Ubuntu' and 
+    ansible_distribution_version != '22.04'
+
+- name: Set up postgresql-14 repo
+  shell: |
+    echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list
+    wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+  args:
+    warn: no
+  when: >
+    ansible_distribution == 'Ubuntu' and 
+    ansible_distribution_version != '22.04' and 
+    pgdg_result.stat.exists == False
+
+- name: Install postgresql
+  apt:
+    name: postgresql-14
+    update_cache: yes
+  notify:
+    - Enable postgresql
+
+- name: Ensure postgresql is listening on *
+  lineinfile:
+    dest: /etc/postgresql/14/main/postgresql.conf
+    regexp: '^listen_addresses\s*='
+    line: "listen_addresses='*'"
+    state: present
+  notify: Restart postgresql
+...
